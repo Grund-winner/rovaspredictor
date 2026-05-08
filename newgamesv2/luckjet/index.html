@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky jet</title>
+  <link rel="stylesheet" href="../../newgames/index.css">
+    <style>
+        @keyframes dots {
+            0% { content: "Waiting"; }
+            33% { content: "Waiting."; }
+            66% { content: "Waiting.."; }
+            100% { content: "Waiting..."; }
+        }
+
+        .text {
+            font-size: 2rem;
+            text-align: center;
+            font-weight: 700;
+            line-height: 2.1;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .right-container {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    display: flex
+;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 105px;
+    width: 50%;
+}
+    </style>
+</head>
+<body class="page">
+    <div class="cv">
+        <img id="ob1" class="obloko" src="https://temshik.partners/signal/LuckySky2/images/obl.svg">
+        <img id="ob2" class="obloko2" src="https://temshik.partners/signal/LuckySky2/images/obl.svg">
+    </div>
+<div class="right-container">
+  <img src="https://entypublic.github.io/dogmain/queen/images/1win_logo.png" alt="1win Logo">
+</div>
+    <div class="winner">
+        <img class="luck" src="https://temshik.partners/signal/LuckySky2/images/Lucky.svg">
+    </div>
+
+    <div class="rocket">
+        <button class="button2" onclick="goBack()">Back to menu</button>
+        <div class="loader2">
+            <p>
+                <div id="multiplier" class="text">Waiting...</div>
+            </p>
+        </div>
+        <div class="visible">
+            <iframe id="myIframe" src="https://1play.gamedev-tech.cc/lucky_grm/vgs/?b=be30b1761af6eced3d9418e6ac4412f82100ca0c28601f572bef5d1a4e62b371b14121c4f26b71e57890f9d522c7b12b3944970205b3433ee8a885b4c8aec5b82be31fdfad1601274ede9f4b1fd1a3e595725994b8d8e9a59b2995bdacbc6896a5ba4e0ea57bf4d6e7b5284e3d681adb15bfdc4f37b14c41907c0ce450092ccd1f36ef00db26879b2136253162a8ef8837e0f2ec5f798b16597cf6d0c579ebb12bf20b0ce7544e009fce4659a417a81f80e1c11fb478712cdc.4fee4f0360f162b814eb6bad44fc9910.077dee8d-c923-4c02-9bee-757573662e69&language=en&pid=1win&pik=019aa5d3-290c-7469-b133-89d1948a968c" onload="hideElements()" scrolling="no"></iframe>
+           <!-- <iframe id="myIframe" src="https://100hp.app/lucky/onewin/" onload="hideElements()" scrolling="no"></iframe>-->
+         <!-- <iframe id="myIframe" src="https://demo.bigvuti.top/lucky.php" onload="hideElements()" scrolling="no"></iframe> --->
+         </div>
+         </div>
+   <script>
+function goBack() {
+  history.back();
+}
+
+/* CONFIG */
+const apiURL = "https://crash-gateway-grm-cr.100hp.app/state";
+const headers = {
+  'customer-id': '077dee8d-c923-4c02-9bee-757573662e69',
+  'session-id': '4040088b-643e-40f2-8c51-4e7181ac27cd',
+  'accept': 'application/json'
+};
+
+function getState() {
+  if (window.api && typeof window.api.getState === 'function') return window.api.getState();
+  return fetch(apiURL, { method: 'GET', headers }).then(r => {
+    if (!r.ok) throw new Error("Erreur API");
+    return r.json();
+  });
+}
+
+const multiplierEl = document.getElementById('multiplier');
+
+/* Fetch prediction using ?b= from iframe */
+let historyDataPred = [];
+
+function calculateMovingAverage(data, window) {
+  if (data.length < window) return data[data.length - 1] || 1.5;
+  const slice = data.slice(-window);
+  return slice.reduce((a, b) => a + b, 0) / slice.length;
+}
+
+function calculateEWMA(data, alpha = 0.3) {
+  if (data.length === 0) return 1.5;
+  let ewma = data[0];
+  for (let i = 1; i < data.length; i++) {
+    ewma = alpha * data[i] + (1 - alpha) * ewma;
+  }
+  return ewma;
+}
+
+function calculateVolatility(data) {
+  if (data.length < 2) return 0;
+  const mean = data.reduce((a, b) => a + b, 0) / data.length;
+  const variance = data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / data.length;
+  return Math.sqrt(variance);
+}
+
+function detectTrend(data, window = 10) {
+  if (data.length < window) return 0;
+  const recent = data.slice(-window);
+  let inc = 0;
+  for (let i = 1; i < recent.length; i++) {
+    if (recent[i] > recent[i - 1]) inc++;
+  }
+  return (inc / (recent.length - 1)) - 0.5;
+}
+
+function calculateMomentum(data, period = 5) {
+  if (data.length < period + 1) return 0;
+  const cur = data[data.length - 1];
+  const past = data[data.length - period - 1];
+  return (cur - past) / past;
+}
+
+function ensemblePrediction(history) {
+  if (history.length < 10) return (1.2 + Math.random() * 1.5);
+
+  const volatility = calculateVolatility(history.slice(-20));
+  const alpha = Math.max(0.1, Math.min(0.5, volatility / 2));
+  const ewmaPred = calculateEWMA(history, alpha);
+
+  const trend = detectTrend(history, 15);
+  const recentAvg = calculateMovingAverage(history, 10);
+  const trendPred = recentAvg * (1 + trend * 0.2);
+
+  const momentum = calculateMomentum(history, 7);
+  const momentumPred = history[history.length - 1] * (1 + momentum * 0.3);
+
+  const mean = history.reduce((a, b) => a + b, 0) / history.length;
+  const last = history[history.length - 1];
+  const meanRev = last + (mean - last) * 0.3;
+
+  let val =
+    ewmaPred * 0.4 +
+    trendPred * 0.2 +
+    momentumPred * 0.2 +
+    meanRev * 0.2;
+
+  return Math.max(1.01, Math.min(val, 5));
+}
+async function getSessionAndCustomerIds(b) {
+    try {
+        const response = await fetch('https://crash-gateway-grm-cr.100hp.app/user/auth', {
+            method: 'POST',
+            headers: {
+                'auth-token': b,
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Auth request failed with status ${response.status}`);
+        }
+        const authData = await response.json();
+        if (!authData || !authData.sessionId) {
+            throw new Error('Invalid auth response or missing sessionId');
+        }
+        const session_id = authData.sessionId?.trim() || '';
+        const customerId = authData.customerId?.trim() || '';
+        if (!session_id || !customerId) {
+            throw new Error('Missing sessionId or customerId');
+        }
+        return {
+            session_id,
+            customerId
+        };
+    } catch (error) {
+        console.error('Auth error:', error);
+        throw error;
+    }
+}
+async function generatePrediction() {
+    try { // First get the session and customer IDs
+    const iframe = document.querySelector('iframe');
+    if (!iframe) return null;
+    const url = new URL(iframe.src);
+    let b = url.searchParams.get('b');
+        const {
+            session_id,
+            customerId
+        } = await getSessionAndCustomerIds(b); // Now make the history request with the obtained credentials 
+        const res = await fetch("https://crash-gateway-grm-cr.gamedev-tech.cc/history", {
+            headers: {
+                "accept": "application/json",
+                "session-id": session_id,
+                "customer-id": customerId
+            }
+        });
+        const data = await res.json();
+        if (!Array.isArray(data) || !data.length) return "1.50";
+        const coef = data[0]?.coef ?? data[0]?.crash ?? data[0]?.value ?? data[0]?.topCoefficient;
+        if (!coef) return "1.50"; // Assuming historyDataPred is defined 
+        historyDataPred.push(Number(coef));
+        const next = ensemblePrediction(historyDataPred);
+        return next.toFixed(2);
+    } catch (e) {
+        console.error("Prediction error:", e);
+        return "1.50";
+    }
+} // To get the 'b' parameter from iframe URL
+function getBParameterFromIframe() {
+    
+} // Usage example: 
+/*
+async function generatePrediction() {
+  try {
+    const res = await fetch("https://crash-gateway-grm-cr.gamedev-tech.cc/history", {
+      headers: {
+        "accept": "application/json",
+        "session-id": "7d12dc7c-9792-4e20-9375-5f5828c698e9",
+        "customer-id": "077dee8d-c923-4c02-9bee-757573662e69"
+      }
+    });
+
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return "1.50";
+
+    const coef =
+      data[0]?.coef ??
+      data[0]?.crash ??
+      data[0]?.value ??
+      data[0]?.topCoefficient;
+
+    if (!coef) return "1.50";
+
+    historyDataPred.push(Number(coef));
+
+    const next = ensemblePrediction(historyDataPred);
+    return next.toFixed(2);
+
+  } catch (e) {
+    console.error("Prediction error:", e);
+    return "1.50";
+  }
+}*/
+
+async function showPrediction() {
+  const value = await currentPrediction;
+  multiplierEl.textContent = value === "Server Error" 
+    ? "Server Error" 
+    : `x${value ?? "N/A"}`;
+}
+
+function walk(o, fn) {
+  const stk = [o];
+  while (stk.length) {
+    const x = stk.pop();
+    if (x && typeof x === 'object') {
+      fn(x);
+      for (const k in x) stk.push(x[k]);
+    }
+  }
+}
+
+function detectStateDeep(d) {
+  let candStr = null, candBool = null, candNum = null;
+  walk(d, obj => {
+    for (const k in obj) {
+      const key = k.toLowerCase();
+      const val = obj[k];
+      if (/(state|status|phase|mode)$/.test(key)) {
+        if (typeof val === 'string' && !candStr) candStr = val.toLowerCase();
+        if (typeof val === 'boolean' && candBool === null) candBool = val;
+        if (typeof val === 'number' && candNum === null) candNum = val;
+      }
+      if (/(running|in_game|ingame|live)$/.test(key) && typeof val === 'boolean' && candBool === null) {
+        candBool = val;
+      }
+    }
+  });
+  if (candBool === true) return 'running';
+  if (candBool === false) return 'waiting';
+  if (typeof candStr === 'string') {
+    const s = candStr;
+    if (['running','started','start','flying','play','playing','live','in_game'].includes(s)) return 'running';
+    if (['crashed','crash','ended','end','finished','finish','dead'].includes(s)) return 'ended';
+    if (['waiting','wait','starting','betting','idle','prepare','preparing','ready','countdown'].includes(s)) return 'waiting';
+  }
+  if (typeof candNum === 'number') {
+    if (candNum === 1) return 'running';
+    if (candNum === 2) return 'ended';
+    if (candNum === 0) return 'waiting';
+  }
+  return 'unknown';
+}
+
+function extractRoundId(d) {
+  let id = null;
+  walk(d, obj => {
+    if (id) return;
+    if (obj.round_id != null) id = obj.round_id;
+    else if (obj.roundId != null) id = obj.roundId;
+    else if (obj.id != null) id = obj.id;
+    else if (obj.uuid != null) id = obj.uuid;
+  });
+  return (id === undefined ? null : id);
+}
+
+const RUN = new Set(['running']);
+const END = new Set(['ended']);
+const WAIT = new Set(['waiting']);
+
+let currentPrediction = generatePrediction();
+let lastState = null;
+let currentRoundId = null;
+let predictedForRoundId = null;
+
+async function triggerPredictionOnceFor(roundId) {
+  if (!roundId) return;
+  if (predictedForRoundId === roundId) return; 
+  currentPrediction = generatePrediction();
+  predictedForRoundId = roundId;
+  await showPrediction();
+}
+
+async function poll() {
+  try {
+    const data = await getState();
+    const stateNow = detectStateDeep(data);
+    let roundIdNow = extractRoundId(data);
+    if (!roundIdNow) roundIdNow = Date.now();
+
+    if (RUN.has(stateNow) && roundIdNow !== currentRoundId) {
+      currentRoundId = roundIdNow;
+    }
+
+    if (lastState && RUN.has(lastState) && (END.has(stateNow) || WAIT.has(stateNow))) {
+      await triggerPredictionOnceFor(roundIdNow);
+    }
+
+    if (WAIT.has(stateNow) && (!predictedForRoundId || predictedForRoundId !== roundIdNow)) {
+      await triggerPredictionOnceFor(roundIdNow);
+    }
+
+    if (RUN.has(stateNow) || END.has(stateNow) || WAIT.has(stateNow)) {
+      await showPrediction();
+    } else {
+      multiplierEl.textContent = "Waiting...";
+    }
+
+    lastState = stateNow;
+  } catch (e) {
+    multiplierEl.textContent = "Connection error...";
+    console.error("Polling error:", e);
+  } finally {
+    setTimeout(poll, 800);
+  }
+}
+
+showPrediction();
+poll();
+</script>
+
+
+</div>
+</body>
+</html>

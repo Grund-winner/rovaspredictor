@@ -1,0 +1,1021 @@
+<html lang="fr"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROVAS SOFT - Menu Jeux</title>
+  <script src="siteControl.js" defer></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <script src="telegram.js"></script>
+ <!--script src="mobilerestrict.js"></script>-->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { 
+      padding: 0; 
+      margin: 0; 
+      box-sizing: border-box; 
+    }
+
+    body { 
+      position: relative; 
+      min-height: 100vh; 
+      display: flex; 
+      flex-direction: column;
+      justify-content: center; 
+      background: linear-gradient(135deg, #1E275B 0%, #12193D 100%);
+      font-family: 'Kanit', sans-serif; 
+      color: #ffffff; 
+      overflow-x: hidden;
+    }
+
+    /* Header Styles */
+    .header {
+      height: 180px;
+      width: 100%;
+      position: relative;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .header-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 180px;
+      height: 180px;
+      opacity: 0.7;
+      z-index: 0;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .header__title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      letter-spacing: 1px;
+    }
+
+    .header__text {
+      font-size: 20px;
+      color: #AAB4E0;
+      font-family:bold;
+      font-weight: 300;
+    }
+
+    /* Search Container */
+    .search-container {
+      position: relative;
+      margin: 15px 0 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .search-box {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 50px 12px 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 30px;
+      font-size: 14px;
+      color: white;
+      outline: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .search-input:focus {
+      border-color: #00dcdc;
+      box-shadow: 0 0 10px rgba(0, 220, 220, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .search-input::placeholder {
+      color: #AAB4E0;
+    }
+
+    .search-btn {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(to right, #00dcdc, #00b4b4);
+      color: #0A0F23;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-50%) scale(1.05);
+      box-shadow: 0 0 10px rgba(0, 220, 220, 0.5);
+    }
+
+    .search-results-count {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #AAB4E0;
+      text-align: center;
+    }
+
+    /* Games List */
+    .games-list {
+      position: relative;
+      background: #1A2255;
+      border-radius: 30px 30px 0 0;
+      padding: 60px 15px 20px;
+      box-shadow: 0px -15px 20px 10px rgba(0, 220, 220, 0.23);
+      border-top: 5px solid #00dcdc;
+      display: grid;
+      gap: 20px 12px;
+      grid-template-columns: 1fr 1fr;
+      transition: all 0.3s ease;
+      margin-top: -30px;
+    }
+
+    /* Fix for search active state */
+    .games-list.search-active {
+      padding-top: 20px !important;
+      margin-top: 0 !important;
+    }
+
+    .games-list__ellipce {
+      position: absolute;
+      left: calc(50% - 15px);
+      top: 20px;
+      width: 30px;
+      height: 5px;
+      background: #00dcdc;
+      border-radius: 3px;
+    }
+
+    .game-list__game {
+      background: linear-gradient(145deg, #253670, #1E2A5F);
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .game-list__game:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .game-list__img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 15px;
+    }
+
+    .game-list__title {
+      color: white;
+      padding: 12px 8px;
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    .game-tag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(to right, #22c55e, #16a34a);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    /* No Results Message */
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      color: #AAB4E0;
+    }
+
+    .no-results i {
+      font-size: 48px;
+      margin-bottom: 15px;
+      color: #2F3F8A;
+    }
+
+    /* Pagination */
+    .dots {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2F3F8A;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background: #00dcdc;
+      transform: scale(1.2);
+    }
+
+    /* Hamburger Menu */
+    .hamburger {
+      position: fixed;
+      top: 25px;
+      right: 25px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 50%;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background-color: white;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger.active div:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+
+    .hamburger.active div:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active div:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -280px;
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(to bottom, #11182f, #0A0F23);
+      color: white;
+      padding: 25px;
+      box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+      transition: right 0.4s ease;
+      z-index: 998;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar.open {
+      right: 0;
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-title {
+      font-size: 22px;
+      font-weight: 500;
+    }
+
+    .close-sidebar {
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: white;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      flex: 1;
+    }
+
+    .sidebar-menu li {
+      margin: 18px 0;
+    }
+
+    .sidebar-menu a {
+      color: white;
+      text-decoration: none;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.3s ease;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .sidebar-menu a:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateX(5px);
+    }
+
+    .sidebar-menu i {
+      width: 25px;
+      text-align: center;
+      color: #00dcdc;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+      font-size: 14px;
+      color: #AAB4E0;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1001;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: linear-gradient(to bottom, #1E275B, #16204D);
+      padding: 25px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 380px;
+      color: white;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .modal-header h3 {
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .modal-close {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #AAB4E0;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 14px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      font-size: 15px;
+      color: white;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      border-color: #00dcdc;
+      box-shadow: 0 0 0 2px rgba(0,220,220,0.2);
+    }
+
+    .coefficients-grid {
+      display: flex;
+      gap: 10px;
+    }
+
+    .coefficients-grid input {
+      flex: 1;
+      text-align: center;
+    }
+
+    .predict-btn {
+      margin-top: 10px;
+      width: 100%;
+      background: linear-gradient(to right, #00dcdc, #00b4b4);
+      color: #0A0F23;
+      padding: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,220,220,0.3);
+    }
+
+    .predict-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,220,220,0.4);
+    }
+
+    .prediction-result {
+      margin-top: 20px;
+      text-align: center;
+      padding: 15px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .prediction-coefficient {
+      font-size: 28px;
+      font-weight: 700;
+      color: #00dcdc;
+      margin-bottom: 5px;
+    }
+
+    .prediction-time {
+      font-size: 14px;
+      color: #AAB4E0;
+    }
+
+    /* Responsive Design */
+    @media (min-width: 500px) {
+      .games-list {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 768px) {
+      .header {
+        height: 200px;
+        padding: 30px;
+      }
+      
+      .header__title {
+        font-size: 32px;
+      }
+      
+      .header__text {
+        font-size: 18px;
+      }
+      
+      .games-list {
+        padding: 60px 30px 30px;
+        gap: 25px;
+      }
+    }
+
+    @media (min-width: 992px) {
+      .games-list {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .game-list__game {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.1);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2F3F8A;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00dcdc;
+    }
+ 
+.gamepad-bg {
+    top: -10px;
+    right: -80px;
+    position: absolute;
+}
+
+.gamepad {
+    width: 170px;
+    height: 170px;
+    top: 10px;
+    right: 0px;
+    position: absolute;
+}
+  /* Fullscreen Preloader */
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* Spinner Design */
+    .spinner {
+      width: 70px;
+      height: 70px;
+      border: 6px solid rgba(255, 255, 255, 0.3);
+      border-top: 6px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 40px 0;
+  width: 100%;
+}
+
+.pagination-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+  </style>
+</head>
+<body>
+     <!-- Preloader -->
+  <div id="preloader">
+    <div class="spinner"></div>
+  </div>
+
+ <!-- Hamburger Menu -->
+<div class="hamburger active" id="hamburger">
+  <div></div><div></div><div></div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar open" id="sidebar">
+  <div class="sidebar-header">
+    <h3 class="sidebar-title">Menu</h3>
+    <button class="close-sidebar" id="closeSidebar">✕</button>
+  </div>
+  <ul class="sidebar-menu">
+    <li><a href="https://t.me/PARTRICK08"><i class="fas fa-user-shield"></i> <span>Contact admin</span></a></li>
+    <li><a href="#" id="piraterBtn"><i class="fas fa-tools"></i> <span>PREDICTOR CRASH</span></a></li>
+    <li><a href="https://t.me/ROVASOFFICIEL"><i class="fas fa-question-circle"></i> <span>Aide</span></a></li>
+  </ul>
+  <div class="sidebar-footer">
+    ROVAS SOFT © 2023
+  </div>
+</div>
+
+<!-- Modal Pirater -->
+<div class="modal" id="piraterModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-tools"></i> Pirater un Jeu de Crash</h3>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="form-group">
+      <label for="gameName"><i class="fas fa-gamepad"></i> Nom du jeu</label>
+      <input type="text" id="gameName" placeholder="Ex: Aviator, Crash X">
+    </div>
+    <div class="form-group">
+      <label><i class="fas fa-chart-line"></i> 3 derniers coefficients</label>
+      <div class="coefficients-grid">
+        <input type="number" id="coeff1" placeholder="1.25" step="0.01">
+        <input type="number" id="coeff2" placeholder="2.50" step="0.01">
+        <input type="number" id="coeff3" placeholder="1.80" step="0.01">
+      </div>
+    </div>
+    <button class="predict-btn" id="predictBtn"><i class="fas fa-calculator"></i> Prédire la cote</button>
+    <div class="prediction-result" id="predictionResult">
+      <div class="prediction-coefficient" id="predictedCoeff">-</div>
+      <div class="prediction-time" id="predictedTime">-</div>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <img class="gamepad-bg" src="assets/gamepad-bg.webp" alt="gamepad-bg">
+  <img class="gamepad" src="assets/gamepad.webp" alt="gamepad">
+  <h2 class="header__title">ROVAS SOFT</h2>
+  <p class="header__text"></p>
+  
+  <!-- Search Container -->
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" class="search-input" id="searchInput" placeholder="Rechercher un jeu...">
+      <button class="search-btn" id="searchBtn">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+    <div class="search-results-count" id="resultsCount"></div>
+  </div>
+</header>
+
+<!-- Games List -->
+<div class="games-list" id="gamesList">
+  <div class="games-list__ellipce"></div>
+
+
+<!-- Pagination Dots -->
+<div class="dots">
+  <div class="dot active"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+</div>
+<script>
+window.onload = function() {
+  let loader = document.getElementById("preloader");
+  loader.classList.add("hidden"); // fade-out smoothly
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const hamburger = document.getElementById('hamburger');
+  const sidebar   = document.getElementById('sidebar');
+
+  const piraterBtn      = document.getElementById('piraterBtn');
+  const piraterModal    = document.getElementById('piraterModal');
+  const modalClose      = document.getElementById('modalClose');
+  const predictBtn      = document.getElementById('predictBtn');
+  const predictionResult= document.getElementById('predictionResult');
+  const gamesList       = document.getElementById('gamesList');
+  
+  // Search elements
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const resultsCount = document.getElementById('resultsCount');
+
+  // Store original games for filtering
+  let originalGames = [];
+  let filteredGames = [];
+
+  // PAGINATION VARIABLES
+  const GAMES_PER_PAGE = 32;
+  let currentPage = 1;
+
+  // ✅ Ensure sidebar is closed on page load
+  sidebar.classList.remove('open');
+  hamburger.classList.remove('active');
+
+  // ✅ Sidebar toggle
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    sidebar.classList.toggle('open');
+  });
+
+  // Modal functionality
+  piraterBtn.addEventListener('click', () => {
+    piraterModal.style.display = 'flex';
+    sidebar.classList.remove('open');
+    hamburger.classList.remove('active');
+  });
+
+  modalClose.addEventListener('click', () => {
+    piraterModal.style.display = 'none';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === piraterModal) piraterModal.style.display = 'none';
+  });
+
+  // Prediction
+  predictBtn.addEventListener('click', () => {
+    const coeff1 = parseFloat(document.getElementById('coeff1').value) || 0;
+    const coeff2 = parseFloat(document.getElementById('coeff2').value) || 0;
+    const coeff3 = parseFloat(document.getElementById('coeff3').value) || 0;
+
+    const avg = (coeff1 + coeff2 + coeff3) / 3;
+    const randomFactor = 0.8 + Math.random() * 0.4;
+    const predictedCoeff = (avg * randomFactor).toFixed(2);
+
+    document.getElementById('predictedCoeff').textContent = predictedCoeff;
+    document.getElementById('predictedTime').textContent =
+      `Dans ${Math.floor(Math.random() * 60)} secondes`;
+    predictionResult.style.display = 'block';
+
+    predictionResult.style.animation = 'none';
+    setTimeout(() => {
+      predictionResult.style.animation = 'fadeIn 0.5s ease-out';
+    }, 10);
+  });
+
+  // Function to get paginated games
+  function getPaginatedGames(games) {
+    const startIndex = (currentPage - 1) * GAMES_PER_PAGE;
+    const endIndex = startIndex + GAMES_PER_PAGE;
+    return games.slice(startIndex, endIndex);
+  }
+
+  // Function to update pagination buttons
+  function updatePagination(totalGames) {
+    // Remove existing pagination container if any
+    const existingPagination = document.querySelector('.pagination-container');
+    if (existingPagination) {
+      existingPagination.remove();
+    }
+
+    const totalPages = Math.ceil(totalGames / GAMES_PER_PAGE);
+    
+    // Don't show pagination if only one page
+    if (totalPages <= 1) {
+      return;
+    }
+
+    // Create pagination container
+    const paginationContainer = document.createElement('div');
+    paginationContainer.className = 'pagination-container';
+    
+    const prevButton = document.createElement('button');
+    prevButton.className = 'pagination-btn prev-btn';
+    prevButton.innerHTML = '<i class="fas fa-chevron-left"></i> previous ';
+    prevButton.disabled = currentPage === 1;
+    
+    const pageInfo = document.createElement('span');
+    pageInfo.className = 'page-info';
+    pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+    document.querySelector(".header__text").textContent = `VERSION ${currentPage}`;
+    const nextButton = document.createElement('button');
+    nextButton.className = 'pagination-btn next-btn';
+    nextButton.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
+    nextButton.disabled = currentPage === totalPages;
+    
+    prevButton.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderPaginatedGames();
+        document.querySelector(".header").scrollIntoView({ behavior: "smooth" });
+      }
+    });
+    
+    nextButton.addEventListener('click', () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderPaginatedGames();
+        document.querySelector(".header").scrollIntoView({ behavior: "smooth" });
+      }
+    });
+    
+    paginationContainer.appendChild(prevButton);
+    paginationContainer.appendChild(pageInfo);
+    paginationContainer.appendChild(nextButton);
+    
+    // Insert pagination after gamesList
+    gamesList.parentNode.insertBefore(paginationContainer, gamesList.nextSibling);
+  }
+
+  // Function to render games (original logic preserved)
+  function renderGames(games) {
+    gamesList.innerHTML = '';
+    
+    if (games.length === 0) {
+      // Show no results message
+      gamesList.innerHTML = `<div class="no-results">
+        <i class="fas fa-search"></i>
+        <p>Aucun jeu trouvé pour votre recherche</p>
+      </div>`;
+      return;
+    }
+    
+    games.forEach((game, index) => {
+      const gameDiv = document.createElement('div');
+      gameDiv.classList.add('game-list__game');
+      gameDiv.style.animationDelay = `${index * 0.1}s`;
+
+      const gameLink = document.createElement('a');
+      gameLink.href = game.link;
+
+      const gameImg = document.createElement('img');
+      gameImg.src = game.img;
+      gameImg.alt = game.alt;
+      gameImg.classList.add('game-list__img');
+
+      const gameTitle = document.createElement('p');
+      gameTitle.classList.add('game-list__title');
+      gameTitle.textContent = game.title;
+
+      // Tag last 2 games as NEW (only for full unfiltered list)
+      if (games === filteredGames && games.length >= 2 && 
+          index >= games.length - 2 && games === getPaginatedGames(originalGames)) {
+        const gameTag = document.createElement('div');
+        gameTag.classList.add('game-tag');
+        gameTag.textContent = "NEW";
+        gameDiv.appendChild(gameTag);
+      }
+
+      gameLink.appendChild(gameImg);
+      gameDiv.appendChild(gameLink);
+      gameDiv.appendChild(gameTitle);
+      gamesList.appendChild(gameDiv);
+    });
+  }
+
+  // New render function that handles pagination
+  function renderPaginatedGames() {
+    const gamesToRender = getPaginatedGames(filteredGames);
+    renderGames(gamesToRender);
+    updatePagination(filteredGames.length);
+  }
+
+  // Search functionality (modified to reset pagination)
+  function performSearch() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    
+    // Toggle search-active class based on search term
+    if (searchTerm === '') {
+      gamesList.classList.remove("search-active");
+    } else {
+      gamesList.classList.add("search-active");
+    }
+    
+    if (searchTerm === '') {
+      // If search is empty, show all games
+      filteredGames = [...originalGames];
+    } else {
+      // Filter games based on search term
+      filteredGames = originalGames.filter(game => 
+        game.title.toLowerCase().includes(searchTerm) || 
+        game.alt.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    // Reset to page 1 on search
+    currentPage = 1;
+    
+    // Update results count
+    updateResultsCount(filteredGames.length);
+    
+    // Render filtered games with pagination
+    renderPaginatedGames();
+  }
+
+  function updateResultsCount(count) {
+    if (searchInput.value.trim() === '') {
+      resultsCount.textContent = '';
+    } else {
+      resultsCount.textContent = `${count} jeu${count !== 1 ? 'x' : ''} trouvé${count !== 1 ? 's' : ''}`;
+    }
+  }
+
+  // Event listeners for search
+  searchInput.addEventListener('input', performSearch);
+  searchBtn.addEventListener('click', performSearch);
+  
+  // Allow pressing Enter to search
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      performSearch();
+    }
+  });
+
+  // ✅ Clear gamesList before appending new games
+  gamesList.innerHTML = '';
+
+  // Load games from JSON
+  fetch('admingjhdsgffx/games.json')
+    .then(res => res.json())
+    .then(savedGames => {
+      originalGames = savedGames;
+      filteredGames = [...originalGames];
+      
+      // Initial render with pagination
+      renderPaginatedGames();
+    })
+    .catch(err => {
+      console.error("Failed to load games JSON:", err);
+      gamesList.innerHTML = `<div class="no-results">
+        <i class="fas fa-exclamation-circle"></i>
+        <p>Impossible de charger les jeux. Veuillez réessayer plus tard.</p>
+      </div>`;
+    });
+
+  // Pagination dots (existing functionality)
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      dots.forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+    });
+  });
+});
+</script>
+</body></html>

@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LuckyJet Prédiction avec découpe iframe</title>
+<link rel="stylesheet" href="../../newgames/index.css">
+<style>
+  body {
+    margin: 0;
+    background-image: url('https://100hp.app/crime_grm/assets/media/24a110ca181a0aea4739bbf608f9d600.webp');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px 10px;
+  }
+  .container {
+    margin-top: 40px;
+   }
+  .logos-container {
+    display: block;
+    gap: 60px;
+    justify-content: left;
+    align-items: left;
+    margin-bottom: 0px;
+    margin-top: 30px;
+    width: 50vw;
+    max-width: 300px;
+  }
+  .logos-container img {
+    max-height: 60px;
+    object-fit: contain;
+  }
+  .iframe-wrapper {
+  width: 80vw;
+  max-width: 600px;
+  height: 350px;  /* <<< too small */
+  overflow: hidden;
+  border-radius: 12px;
+  position: relative;
+}
+
+.iframe-wrapper iframe {
+  width: 100%;
+  height: 700px;  /* iframe is tall but wrapper clips it */
+  border: none;
+  position: relative;
+  top: -50px;
+  border-radius: 12px 12px 0 0;
+}
+
+  .prediction-container {
+    margin-top: 25px;
+    width: 70vw;
+    height: 50px;
+    max-width: 600px;
+    background: #1b1934;
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    user-select: none;
+  }
+  .multiplier {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+    transition: color 0.5s ease;
+  }
+  .goBack {
+    width: 82%;
+    margin-top: 40px;
+    display: inline-block;
+      color: rgb(221, 221, 221);
+    text-shadow: rgb(138, 138, 138) 0px 0px 20px;
+    background: linear-gradient(263.87deg, rgb(148, 78, 245) 0%, rgb(92, 36, 252) 100%);
+    box-shadow: rgba(25, 201, 245, 0.1) 0px 10px 20px, rgba(92, 36, 252, 0.1) 0px 10px 20px, rgb(148, 78, 245) 0px -2px 4px inset, rgba(148, 78, 245, 0.6) 0px -8px 8px inset;
+   
+    border: none;
+    padding: 14px 28px;
+    border-radius: 5px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    user-select: none;
+    transition: background 0.3s ease;
+  }
+  .goBack:hover {
+    background: linear-gradient(90deg, #ad7eff 0%, #6f42c1 100%);
+  }
+  .right-container {
+  position: absolute;      /* position relative to the page */
+  top: 90px;               /* distance from top */
+  right: 0;                /* stick to the right edge */
+  display: flex;
+  justify-content: flex-end; /* image aligned to the container's right */
+  align-items: center;
+  gap: 105px;
+  width: 50%;              /* container takes half the page width */
+}
+
+.right-container img {
+  max-height: 60px;
+  object-fit: contain;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="logos-container">
+  <img src="https://100hp.app/crime_grm/assets/game-logo.webp" alt="game Logo" />
+</div>
+<div class="right-container">
+  <img src="https://entypublic.github.io/dogmain/queen/images/1win_logo.png" alt="1win Logo" />
+</div>
+
+<div class="iframe-wrapper">
+  <iframe id="myIframe" src="https://100hp.app/crime_grm/vgs/?b=76890fb41b8aae17804d1382a423a6969ab74b6e9f5a328eecf253990c66dd3317cf1cd6a1892bf18979cdf0221bb6c8b20135b80263b55a5b4c89ad1490d6109f1697af102814ccc85331f823f4635d72ea18ff289bcc14a982bc0ced5951b73ef9c80dee91839225ec9240ed15be820ed29fc5ec3df16a6b8adb55a13008791eb367b46f335fd4d37b74ddad11dcee661a36f3d21f6bbfeaf05264d75c8dc2c6a5b39903de306f8dfc6f584463c7f2470d19863736c815ce.addaae0f5e28dc422f45312e95b39448.077dee8d-c923-4c02-9bee-757573662e69&language=en&pid=1win&pik=01961b0c-014f-7e9f-ba67-975a51323096" onload="hideElements()" scrolling="no"></iframe>
+</div>
+
+<div class="prediction-container">
+  <div id="multiplier" class="multiplier">Waiting...</div>
+</div>
+
+<div class="goBack" onclick="goBack()">Back to menu</div>
+</div>
+
+<script>
+function goBack() {
+  history.back();
+}
+
+/* CONFIG & HELPERS */
+const apiURL = "https://crash-gateway-grm-cr.100hp.app/state";
+const headers = {
+  'customer-id': '077dee8d-c923-4c02-9bee-757573662e69',
+  'session-id': '80907bf3-a9d8-46be-b8f4-07c48260257c',
+  'accept': 'application/json'
+};
+
+function getState() {
+  if (window.api && typeof window.api.getState === 'function') return window.api.getState();
+  return fetch(apiURL, { method: 'GET', headers }).then(r => {
+    if (!r.ok) throw new Error("Erreur API");
+    return r.json();
+  });
+}
+
+let historyDataPred = [];
+
+function calculateMovingAverage(data, window) {
+  if (data.length < window) return data[data.length - 1] || 1.5;
+  const slice = data.slice(-window);
+  return slice.reduce((a, b) => a + b, 0) / slice.length;
+}
+
+function calculateEWMA(data, alpha = 0.3) {
+  if (data.length === 0) return 1.5;
+  let ewma = data[0];
+  for (let i = 1; i < data.length; i++) {
+    ewma = alpha * data[i] + (1 - alpha) * ewma;
+  }
+  return ewma;
+}
+
+function calculateVolatility(data) {
+  if (data.length < 2) return 0;
+  const mean = data.reduce((a, b) => a + b, 0) / data.length;
+  const variance = data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / data.length;
+  return Math.sqrt(variance);
+}
+
+function detectTrend(data, window = 10) {
+  if (data.length < window) return 0;
+  const recent = data.slice(-window);
+  let inc = 0;
+  for (let i = 1; i < recent.length; i++) {
+    if (recent[i] > recent[i - 1]) inc++;
+  }
+  return (inc / (recent.length - 1)) - 0.5;
+}
+
+function calculateMomentum(data, period = 5) {
+  if (data.length < period + 1) return 0;
+  const cur = data[data.length - 1];
+  const past = data[data.length - period - 1];
+  return (cur - past) / past;
+}
+
+function ensemblePrediction(history) {
+  if (history.length < 10) return (1.2 + Math.random() * 1.5);
+
+  const volatility = calculateVolatility(history.slice(-20));
+  const alpha = Math.max(0.1, Math.min(0.5, volatility / 2));
+  const ewmaPred = calculateEWMA(history, alpha);
+
+  const trend = detectTrend(history, 15);
+  const recentAvg = calculateMovingAverage(history, 10);
+  const trendPred = recentAvg * (1 + trend * 0.2);
+
+  const momentum = calculateMomentum(history, 7);
+  const momentumPred = history[history.length - 1] * (1 + momentum * 0.3);
+
+  const mean = history.reduce((a, b) => a + b, 0) / history.length;
+  const last = history[history.length - 1];
+  const meanRev = last + (mean - last) * 0.3;
+
+  let val =
+    ewmaPred * 0.4 +
+    trendPred * 0.2 +
+    momentumPred * 0.2 +
+    meanRev * 0.2;
+
+  return Math.max(1.01, Math.min(val, 50));
+}
+
+async function getPredictionFromIframe() {
+  try {
+    const res = await fetch("https://crash-gateway-grm-cr.100hp.app/history", {
+      headers: {
+        "accept": "application/json",
+        "session-id": "80907bf3-a9d8-46be-b8f4-07c48260257c",
+        "customer-id": "077dee8d-c923-4c02-9bee-757573662e69"
+      }
+    });
+
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return "1.50";
+
+    const coef =
+      data[0]?.coef ??
+      data[0]?.crash ??
+      data[0]?.value ??
+      data[0]?.topCoefficient;
+
+    if (!coef) return "1.50";
+
+    historyDataPred.push(Number(coef));
+
+    const next = ensemblePrediction(historyDataPred);
+    return next.toFixed(2);
+
+  } catch (e) {
+    console.error("Prediction error:", e);
+    return "1.50";
+  }
+}
+
+
+/* MULTIPLIER DISPLAY */
+const multiplierEl = document.getElementById('multiplier');
+let currentPrediction = "x...";
+
+/* --- UTILITIES --- */
+function walk(o, fn) {
+  const stk = [o];
+  while (stk.length) {
+    const x = stk.pop();
+    if (x && typeof x === 'object') {
+      fn(x);
+      for (const k in x) stk.push(x[k]);
+    }
+  }
+}
+
+function detectStateDeep(d) {
+  let candStr = null, candBool = null, candNum = null;
+  walk(d, obj => {
+    for (const k in obj) {
+      const key = k.toLowerCase();
+      const val = obj[k];
+      if (/(state|status|phase|mode)$/.test(key)) {
+        if (typeof val === 'string' && !candStr) candStr = val.toLowerCase();
+        if (typeof val === 'boolean' && candBool === null) candBool = val;
+        if (typeof val === 'number' && candNum === null) candNum = val;
+      }
+      if (/(running|in_game|ingame|live)$/.test(key) && typeof val === 'boolean' && candBool === null) {
+        candBool = val;
+      }
+    }
+  });
+  if (candBool === true) return 'running';
+  if (candBool === false) return 'waiting';
+  if (typeof candStr === 'string') {
+    const s = candStr;
+    if (['running', 'started', 'start', 'flying', 'play', 'playing', 'live', 'in_game'].includes(s)) return 'running';
+    if (['crashed', 'crash', 'ended', 'end', 'finished', 'finish', 'dead'].includes(s)) return 'ended';
+    if (['waiting', 'wait', 'starting', 'betting', 'idle', 'prepare', 'preparing', 'ready', 'countdown'].includes(s)) return 'waiting';
+  }
+  if (typeof candNum === 'number') {
+    if (candNum === 1) return 'running';
+    if (candNum === 2) return 'ended';
+    if (candNum === 0) return 'waiting';
+  }
+  return 'unknown';
+}
+
+function extractRoundId(d) {
+  let id = null;
+  walk(d, obj => {
+    if (id) return;
+    if (obj.round_id != null) id = obj.round_id;
+    else if (obj.roundId != null) id = obj.roundId;
+    else if (obj.id != null) id = obj.id;
+    else if (obj.uuid != null) id = obj.uuid;
+  });
+  return (id === undefined ? null : id);
+}
+
+/* ROUND CONTROL */
+const RUN = new Set(['running']);
+const END = new Set(['ended']);
+const WAIT = new Set(['waiting']);
+
+let lastState = null;
+let currentRoundId = null;
+let predictedForRoundId = null;
+
+async function triggerPredictionOnceFor(roundId) {
+  if (!roundId) return;
+  if (predictedForRoundId === roundId) return; // already predicted
+  predictedForRoundId = roundId;
+
+  currentPrediction = await getPredictionFromIframe();
+  multiplierEl.textContent = `x${currentPrediction}`;
+}
+
+/* POLLING LOOP */
+async function poll() {
+  try {
+    const data = await getState();
+    const stateNow = detectStateDeep(data);
+    let roundIdNow = extractRoundId(data);
+    if (!roundIdNow) roundIdNow = Date.now();
+
+    if (RUN.has(stateNow) && roundIdNow !== currentRoundId) currentRoundId = roundIdNow;
+
+    if (lastState && RUN.has(lastState) && (END.has(stateNow) || WAIT.has(stateNow))) {
+      await triggerPredictionOnceFor(roundIdNow);
+    }
+
+    if (WAIT.has(stateNow) && (!predictedForRoundId || predictedForRoundId !== roundIdNow)) {
+      await triggerPredictionOnceFor(roundIdNow);
+    }
+
+    if (RUN.has(stateNow) || END.has(stateNow) || WAIT.has(stateNow)) {
+      multiplierEl.textContent = `x${currentPrediction}`;
+    } else {
+      multiplierEl.textContent = "Waiting...";
+    }
+
+    lastState = stateNow;
+  } catch (e) {
+    multiplierEl.textContent = "Connection error...";
+    console.error(e);
+  } finally {
+    setTimeout(poll, 800);
+  }
+}
+
+/* START */
+multiplierEl.textContent = "x...";
+poll();
+</script>
+
+
+
+</body>
+</html>
