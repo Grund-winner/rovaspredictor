@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>CRIME EMPIRE PREDICTOR PRO</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('https://i.ibb.co/HTnnRwMD/IMG-7264.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            touch-action: manipulation;
+            transition: opacity 0.5s ease;
+        }
+
+        .first-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+
+        .first-page.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .center-image {
+            max-width: 95vw;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        .loader-container {
+            position: absolute;
+            bottom: 6%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 72%;
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .loader-bar-track {
+            width: 100%;
+            height: 7px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .loader-bar-fill {
+            height: 100%;
+            width: 1%;
+            background: linear-gradient(90deg, #3498db, #8a2be2);
+            border-radius: 50px;
+            transition: width 0.06s linear;
+        }
+
+        .loader-pct {
+            color: #fff;
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 3px;
+            opacity: 0.85;
+        }
+
+        .loader-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            letter-spacing: 4px;
+        }
+
+        .lucky-jet-page {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            overflow: visible;
+        }
+
+        .lucky-jet-page.active {
+            display: flex;
+        }
+
+        .button-3d {
+            padding: 10px 20px;
+            background: linear-gradient(145deg, #8a2be2, #7a1dbf);
+            border: 2px solid #ffffff;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 10px;
+            position: absolute;
+            z-index: 5;
+        }
+
+        .button-3d:active {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transform: translateY(2px);
+        }
+
+        /* Switch Button */
+        .mode-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+
+        .switch-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid #ffd700;
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: 0.3s;
+        }
+
+        .switch-btn:hover {
+            background: #ffd700;
+            color: black;
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: auto;
+        }
+
+        .video-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            animation: fall 5s linear infinite;
+        }
+
+        .outer-circle {
+            width: 250px;
+            height: 250px;
+            background:black;
+            border: 5px solid #3498db;
+            border-radius: 50%;
+            animation: pulse 2s infinite ease-in-out;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+        }
+
+        .circle-container {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            animation: rotate 3s linear infinite;
+        }
+
+        .coefficient-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            color: white;
+            white-space: nowrap;
+            font-weight: bold;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .signal-label {
+            font-size: 11px;
+            color: #ffd54a;
+            font-weight: 800;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+      .predictor-text {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            width:300px;
+            transform: translateX(-50%);
+            color: #4B0082;
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1px;
+            white-space: nowrap;
+        }
+
+
+        .message-table {
+            position: fixed;
+            top: -100px;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            transition: top 0.5s ease-in-out;
+            z-index: 1000;
+        }
+
+        .message-table.active {
+            top: 0;
+        }
+
+        .scroll-track {
+            position: absolute;
+            bottom: 0;
+            display: flex;
+            width: max-content;
+            animation: scroll 70s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0)
+            }
+
+            100% {
+                transform: translateX(-50%)
+            }
+        }
+
+        .scroll-item {
+            flex: 0 0 100vw;
+            height: 141px;
+        }
+
+        .scroll-item img {
+            width: 100vw;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh)
+            }
+
+            100% {
+                transform: translateY(100vh)
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+                box-shadow: 1px 5px 2px #e65c00
+            }
+
+            100% {
+                transform: rotate(360deg);
+                box-shadow: 1px 5px 2px #0456c8
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                border-width: 5px;
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4)
+            }
+
+            50% {
+                border-width: 8px;
+                box-shadow: 0 0 0 10px rgba(52, 152, 219, 0)
+            }
+
+            100% {
+                border-width: 5px;
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="first-page" id="first-page">
+        <img src="https://i.supaimg.com/4f891786-3561-4996-9953-16a96d033ae3/bed052c5-f4b4-4ede-bd3c-e504a957522c.png"
+            alt="Image centrale" class="center-image">
+        <div class="loader-container">
+            <div class="loader-label">LOADING PREDICTOR...</div>
+            <div class="loader-bar-track">
+                <div class="loader-bar-fill" id="loader-bar-fill"></div>
+            </div>
+            <div class="loader-pct" id="loader-pct">1%</div>
+        </div>
+    </div>
+
+    <div class="lucky-jet-page" id="lucky-jet-page">
+        <div class="mode-switch">
+            <button class="switch-btn" onclick="location.href='crimeempire.html'">NORMAL</button>
+        </div>
+        <div class="message-table" id="message-table"><span id="message-text"></span></div>
+
+        <div class="video-container">
+            <img src="https://i.supaimg.com/4f891786-3561-4996-9953-16a96d033ae3/bed052c5-f4b4-4ede-bd3c-e504a957522c.png"
+                alt="Image fixe">
+        </div>
+
+        <div class="outer-circle">
+            <div class="circle-container"></div>
+            <div class="coefficient-circle">
+                <span class="signal-label">NEXT COEFFICIENT ✅</span>
+                <span id="coefficient-circle">Chargement...</span>
+            </div>
+        </div>
+
+
+          <div class="predictor-text">
+    <img src="https://i.ibb.co/FL7CsnFg/IMG-7233.png" alt="Predictor Tropicana" style="max-width:100%; height:auto;">
+</div>
+
+        <button class="button-3d" onclick="closePage()" style="bottom:0px;left:0%;">Back</button>
+        <audio id="nextRoundAudio"></audio>
+    </div>
+
+    <script type="module">
+        const { get: _get } = await import("https://cdn.jsdelivr.net/npm/lodash-es@4.17.21/lodash.min.js");
+        const HISTORY_URL = "https://crash-gateway-grm-cr.100hp.app/history";
+        const SESSION_ID = "13a733f7-d754-40f3-8ede-ee9e6caf069b";
+        const CUSTOMER_ID = "077dee8d-c923-4c02-9bee-757573662e69";
+        let lastSeenId = null;
+        const historyData = [];
+        function getCoef(item) { const v = _get(item, "coef") ?? _get(item, "crash") ?? _get(item, "value") ?? _get(item, "topCoefficient"); return v ? Number(v) : undefined; }
+        function calcEWMA(data, alpha = 0.3) { if (!data.length) return 1.5; let e = data[0]; for (let i = 1; i < data.length; i++)e = alpha * data[i] + (1 - alpha) * e; return e; }
+        function calcMA(data, w) { if (data.length < w) return data[data.length - 1] || 1.5; return data.slice(-w).reduce((a, b) => a + b, 0) / w; }
+        function calcVol(data) { if (data.length < 2) return 0; const m = data.reduce((a, b) => a + b, 0) / data.length; return Math.sqrt(data.reduce((s, v) => s + Math.pow(v - m, 2), 0) / data.length); }
+        function detectTrend(data, w = 10) { if (data.length < w) return 0; const r = data.slice(-w); let up = 0; for (let i = 1; i < r.length; i++)if (r[i] > r[i - 1]) up++; return (up / (r.length - 1)) - 0.5; }
+        function calcMomentum(data, p = 5) { if (data.length < p + 1) return 0; return (data[data.length - 1] - data[data.length - p - 1]) / data[data.length - p - 1]; }
+        function findCycles(data) { if (data.length < 20) return 1.5; const norm = data.map(v => Math.log(v)); const mean = norm.reduce((a, b) => a + b, 0) / norm.length; const c = norm.map(v => v - mean); let maxC = 0, bestLag = 1; for (let lag = 1; lag < Math.min(10, data.length / 2); lag++) { let corr = 0; for (let i = 0; i < c.length - lag; i++)corr += c[i] * c[i + lag]; corr /= (c.length - lag); if (Math.abs(corr) > Math.abs(maxC)) { maxC = corr; bestLag = lag; } } return data.length > bestLag ? data[data.length - bestLag] : data[data.length - 1]; }
+        function wRegression(data, weights) { if (data.length < 3) return data[data.length - 1] || 1.5; const n = data.length; let sX = 0, sY = 0, sXY = 0, sX2 = 0, sW = 0; for (let i = 0; i < n; i++) { const x = i, y = Math.log(data[i]), w = weights[i]; sW += w; sX += w * x; sY += w * y; sXY += w * x * y; sX2 += w * x * x; } const slope = (sW * sXY - sX * sY) / (sW * sX2 - sX * sX); const intercept = (sY - slope * sX) / sW; return Math.exp(slope * n + intercept); }
+        function ensemblePrediction(history) { if (history.length < 10) return 1.2 + Math.random() * 1.5; const vol = calcVol(history.slice(-20)); const alpha = Math.max(0.1, Math.min(0.5, vol / 2)); const ewmaPred = calcEWMA(history, alpha); const trend = detectTrend(history, 15); const recentAvg = calcMA(history, 10); const trendPred = recentAvg * (1 + trend * 0.2); const momentum = calcMomentum(history, 7); const momentumPred = history[history.length - 1] * (1 + momentum * 0.3); const cyclePred = findCycles(history); const regW = history.map((_, i) => Math.exp((i - history.length + 1) / 8)); const regressionPred = wRegression(history, regW); const overallMean = history.reduce((a, b) => a + b, 0) / history.length; const lastValue = history[history.length - 1]; const meanRevPred = lastValue + (overallMean - lastValue) * 0.3; const preds = [{ val: ewmaPred, w: 0.25 }, { val: trendPred, w: 0.20 }, { val: momentumPred, w: 0.15 }, { val: cyclePred, w: 0.10 }, { val: regressionPred, w: 0.20 }, { val: meanRevPred, w: 0.10 }]; let ensemble = preds.reduce((s, p) => s + p.val * p.w, 0); return Math.max(1.01, Math.min(ensemble, 50)); }
+        function showMessage(msg) { const t = document.getElementById('message-table'); document.getElementById('message-text').textContent = msg; t.classList.add('active'); setTimeout(() => t.classList.remove('active'), 3000); }
+        function updateDisplay(value) { const el = document.getElementById('coefficient-circle'); el.textContent = typeof value === 'number' ?  Math.min(value, 8).toFixed(2) + 'x' : value; }
+        async function fetchHistory() { try { const res = await fetch(HISTORY_URL, { headers: { "accept": "application/json", "session-id": SESSION_ID, "customer-id": CUSTOMER_ID } }); const data = await res.json(); if (!Array.isArray(data) || !data.length) return; const latest = data[0]; if (latest?.id === lastSeenId) return; lastSeenId = latest.id; const coef = getCoef(latest); if (!coef) return; historyData.push(coef); const next = ensemblePrediction(historyData); updateDisplay(next); showMessage('Nouveau signal généré'); } catch (e) { console.error('API fetch error:', e); } }
+        setTimeout(() => { fetchHistory(); setInterval(fetchHistory, 5000); }, 4600);
+    </script>
+
+    <script>
+        (function () { var p = 1; var bar = document.getElementById('loader-bar-fill'); var pct = document.getElementById('loader-pct'); var iv = setInterval(function () { p += Math.floor(Math.random() * 4) + 1; if (p >= 100) { p = 100; clearInterval(iv); } bar.style.width = p + '%'; pct.textContent = p + '%'; }, Math.round(4500 / 40)); })();
+        setTimeout(function () { const fp = document.getElementById('first-page'); const lp = document.getElementById('lucky-jet-page'); fp.classList.add('hidden'); setTimeout(function () { fp.style.display = 'none'; lp.classList.add('active'); }, 500); }, 4500);
+        function closePage() { if (window.history.length > 1) window.history.back(); else window.open('', '_self').close(); }
+        
+       
+        function adjustLayout() { document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`); }
+        window.addEventListener('resize', adjustLayout); adjustLayout();
+        document.addEventListener('gesturestart', e => e.preventDefault());
+    </script>
+</body>
+
+</html>

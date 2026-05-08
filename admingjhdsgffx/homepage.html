@@ -1,0 +1,156 @@
+<?php
+session_start();
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: index.php");
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<link rel="stylesheet" href="styles.css">
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+<h1>Games Admin Panel</h1>
+<div id="topBar">
+  <input type="text" id="searchGame" placeholder="Search Game">
+  <button id="addGameBtn"><i class="ri-add-line"></i> Add New Game</button>
+</div>
+<div id="gamesContainer"></div>
+
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <h2>Edit Game</h2>
+    <div class="form-group">
+      <label for="gameTitle">Title</label>
+      <input type="text" id="gameTitle">
+    </div>
+    <div class="form-group">
+      <label for="gameAlt">Alt</label>
+      <input type="text" id="gameAlt">
+    </div>
+    <div class="form-group">
+      <label for="gameImg">Image Link</label>
+      <input type="text" id="gameImg">
+    </div>
+    <div class="form-group">
+      <label for="gameLink">Game URL</label>
+      <input type="text" id="gameLink">
+    </div>
+    <div class="modal-buttons">
+      <button id="saveGame">Save</button>
+      <button id="closeModal">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let games = [];
+let editingIndex = null;
+
+const container = document.getElementById('gamesContainer');
+const modal = document.getElementById('editModal');
+const titleInput = document.getElementById('gameTitle');
+const altInput = document.getElementById('gameAlt');
+const imgInput = document.getElementById('gameImg');
+const linkInput = document.getElementById('gameLink');
+
+function loadGames(){
+  fetch('games.json').then(res=>res.json()).then(data=>{
+    games = data;
+    renderGames();
+  });
+}
+
+function renderGames(filter=""){
+  container.innerHTML="";
+  games.filter(g=>g.title.toLowerCase().includes(filter.toLowerCase())).forEach((game,index)=>{
+    const card = document.createElement('div');
+    card.className="game-card";
+    card.innerHTML=`
+      <div class="img-container"><img src="${game.img}" alt="${game.alt}"></div>
+      <p class="title">${game.title}</p>
+      <div class="actions">
+        <i class="ri-edit-line edit-icon" onclick="editGame(${index})"></i>
+        <i class="ri-delete-bin-line delete-icon" onclick="deleteGame(${index})"></i>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function editGame(index){
+  editingIndex=index;
+  const game=games[index];
+  titleInput.value=game.title;
+  altInput.value=game.alt;
+  imgInput.value=game.img;
+  linkInput.value=game.link;
+  modal.classList.add('show');
+}
+
+function deleteGame(index){
+  if(confirm('Delete this game?')){
+    games.splice(index,1);
+    saveGames();
+    renderGames(document.getElementById('searchGame').value);
+  }
+}
+
+document.getElementById('saveGame').addEventListener('click',()=>{
+  const newGame = {
+    title:titleInput.value,
+    alt:altInput.value,
+    img:imgInput.value,
+    link:linkInput.value
+  };
+
+  if (editingIndex !== null && editingIndex < games.length) {
+    // Update existing game
+    games[editingIndex] = newGame;
+  } else {
+    // Add new game
+    games.push(newGame);
+  }
+
+  saveGames();
+  renderGames(document.getElementById('searchGame').value);
+  modal.classList.remove('show');
+  editingIndex = null;
+});
+
+document.getElementById('closeModal').addEventListener('click',()=>{
+  modal.classList.remove('show');
+  editingIndex = null;
+});
+
+document.getElementById('addGameBtn').addEventListener('click',()=>{
+  editingIndex = null;
+  titleInput.value="";
+  altInput.value="";
+  imgInput.value="";
+  linkInput.value="";
+  modal.classList.add('show');
+});
+
+document.getElementById('searchGame').addEventListener('input',e=>{
+  renderGames(e.target.value);
+});
+
+function saveGames(){
+  fetch('save.php',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(games)
+  });
+}
+
+loadGames();
+</script>
+
+</body>
+</html>

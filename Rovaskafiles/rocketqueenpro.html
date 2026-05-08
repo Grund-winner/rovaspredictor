@@ -1,0 +1,675 @@
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1win LuckyJet</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-image: url('https://github.com/entypublic/dogmain/blob/main/queen/images/bg.jpg?raw=true');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      margin: 0;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      height: 100vh;
+      margin-top: 0px;
+      justify-content: center;
+    }
+
+.header {
+width: 80%;
+padding: 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+max-width: 380px;
+}
+
+.header img {
+height: 35px;
+}
+
+.box {
+background-image: url("ezgif-6482ac381a5d456c.gif");
+border: 1px solid rgba(255, 255, 255, 0.2);
+border-radius: 10px;
+width: 80%;
+max-width: 380px;
+height: 180px;
+display: flex;
+justify-content: center;
+align-items: center;
+font-size: 28px;
+font-weight: bold;
+position: relative;
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+}
+
+.progress-bar {
+height: 9px;
+width: 80%;
+max-width: 380px;
+background-color: #000;
+border:solid 1px #000;
+border-radius: 5px;
+overflow: hidden;
+margin-top: 40px;
+display:none;
+}
+
+.progress-bar-fill {
+height: 100%;
+width: 0%;
+display:none;
+background: #8A2BE2;
+transition: width 0.3s ease;
+box-shadow: 0 0 10px rgba(138, 43, 226, 0.6);
+}
+
+.info {
+margin-top: 20px;
+font-weight: bold;
+font-size: 14px;
+line-height: 1.8;
+width: 70%;
+max-width: 380px;
+text-align: left;
+background-color:black;
+background-size: cover;
+background-position: center;
+padding: 15px;
+border-radius: 10px;
+border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.buttons {
+margin-top: 30px;
+display: flex;
+flex-direction: column;
+gap: 15px;
+width: 80%;
+max-width: 380px;
+}
+
+.btn {
+background: blueviolet;
+color: white;
+border: none;
+padding: 15px 0;
+border-radius: 10px;
+font-size: 16px;
+cursor: pointer;
+transition: 0.3s ease-in-out;
+box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+}
+
+.btn:hover {
+filter: brightness(1.1);
+box-shadow: 0 0 30px rgba(138, 43, 226, 0.8);
+}
+
+.btn:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+}
+
+.status-ready {
+color: white;
+font-weight: bold;
+}
+
+.status-active {
+color: white;
+font-weight: bold;
+}
+
+.status-waiting {
+color: white;
+font-weight: bold;
+}
+
+.status-analyzing {
+color: white;
+font-weight: bold;
+}
+
+.pulsing {
+animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+0% { opacity: 1; }
+50% { opacity: 0.7; }
+100% { opacity: 1; }
+}
+
+.countdown {
+color: #FF9800;
+font-weight: bold;
+}
+
+.last-results {
+margin-top: 15px;
+font-size: 12px;
+color: #ccc;
+text-align: center;
+display: none;
+}
+/* 🟣 SPACE BACKGROUND WITH FLOATING STARS */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  z-index: -5;
+}
+
+/* Small stars */
+.stars-small {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: url("https://png.pngtree.com/thumb_back/fw800/background/20231005/pngtree-star-sky-nebula-galaxy-background-image_13538136.png");
+  background-size: cover;
+  opacity: 0.06;
+  animation: starsMove 120s linear infinite;
+  z-index: -4;
+}
+
+/* Medium stars */
+.stars-mid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: url("https://png.pngtree.com/background/20210712/original/pngtree-beautiful-universe-background-picture-image_1179734.jpg");
+  background-size: cover;
+  opacity: 0.1;
+  animation: starsMove 160s linear infinite;
+  z-index: -3;
+}
+
+/* Parallax stars movement */
+@keyframes starsMove {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* 🟣 SLIDING CLOUDS AT BOTTOM */
+.cloud-container {
+  position: fixed;
+  bottom: -20px;
+  left: 0;
+  width: 200%;
+  height: 200px;
+  overflow: hidden;
+  display: flex;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.cloud {
+  width: 100%;
+  height: auto;
+  opacity: 0.9;
+  animation: cloudSlide 25s linear infinite;
+  filter: drop-shadow(0px 0px 10px rgba(255,255,255,0.5));
+}
+
+/* Cloud movement */
+@keyframes cloudSlide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+  </style>
+  <div class="cloud-container">
+   <img src="https://i.ibb.co/qM39svvn/Background-Eraser-20250423-095511871.png" class="cloud">
+   <img src="https://i.ibb.co/qM39svvn/Background-Eraser-20250423-095511871.png" class="cloud">
+</div>
+
+<body>
+    <div class="stars-small"></div>
+<div class="stars-mid"></div>
+
+  <!-- En-tête -->
+<h2 id="mainTitle" style="
+    color:white;
+    text-align:center;
+    font-size:24px;
+    font-weight:bold;
+    margin-top:10px;
+    margin-bottom:5px;
+    text-shadow:0 0 10px rgba(255,255,255,0.5);
+">
+    ROCKET QUEEN AI PREDICTOR
+</h2>
+
+  <div class="header">
+    
+  </div>
+
+  <!-- Cadre -->
+
+  <div class="box" id="coefficientBox">
+    00.00X - 00.00X
+  </div>
+
+  <!-- Barre de progression -->
+
+  <div class="progress-bar">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+
+  <!-- Infos -->
+  <div class="info">
+ <!--HEURE: <span id="timeDisplay">00:00 - 00:00</span><br>-->
+CHANCE: <span id="chanceDisplay">00%</span><br>
+TIME WINDOW: <span id="apiTimeWindow">--:--</span><br>
+<span id="statusDisplay" class="status-ready">Prediction Updated Successfully!</span>
+
+  </div>
+
+  <!-- Boutons -->
+
+  <div class="buttons">
+    <button class="btn" id="newSignalBtn" onclick="generateNewSignal()">GET SIGNAL</button>
+    <a onclick="history.back()" class="btn" id="backBtn" style="border: none;color: white;padding: 8px 40px;font-size: 24px;font-weight: bold;border-radius: 15px;background: #000; text-decoration: none;text-align: center;">Back</a>
+  </div>
+
+  <script>
+    let signalActive = false;
+    let nextSignalTime = null;
+    let secondSignalTime = null;
+    let countdownInterval = null;
+    let predictionData = null;
+    let verificationTimeout = null;
+    let verificationInterval = null;
+
+    // Configuration de l'API
+    const apiURL = "https://crash-gateway-grm-cr.100hp.app/state";
+const headers = {
+  'customer-id': '077dee8d-c923-4c02-9bee-757573662e69',
+  'session-id': '7c578eec-5a8f-4f05-8457-fe7da4029eee',
+  'accept': 'application/json'
+};
+
+    // Fonction pour récupérer les données de l'API
+    async function fetchGameData() {
+      try {
+        const response = await fetch(apiURL, { headers });
+        if (!response.ok) throw new Error('Erreur API');
+        return await response.json();
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+        return null;
+      }
+    }
+
+    // Fonction pour générer des coefficients dans la plage spécifiée
+    function generateOptimizedCoefficients() {
+      // Coefficient de gauche: 85% entre 2.10-2.58, 15% entre 2.59-3.00
+      // Coefficient de droite: entre 3.86 et 8.30
+      
+      const random = Math.random();
+      let leftCoeff, rightCoeff;
+      
+      if (random < 0.85) {
+        // 85% du temps: entre 2.10 et 2.58
+        leftCoeff = (Math.random() * (2.58 - 2.10) + 2.10).toFixed(2);
+      } else {
+        // 15% du temps: entre 2.59 et 3.00
+        leftCoeff = (Math.random() * (3.00 - 2.59) + 2.59).toFixed(2);
+      }
+      
+      // Coefficient de droite: toujours entre 3.86 et 8.30
+      rightCoeff = (Math.random() * (8.30 - 3.86) + 3.86).toFixed(2);
+      
+      return { leftCoeff, rightCoeff };
+    }
+
+    // Fonction pour vérifier si la prédiction est validée
+    function checkPredictionResult(currentCoefficient, predictedLeft, predictedRight) {
+      const current = parseFloat(currentCoefficient);
+      const left = parseFloat(predictedLeft);
+      const right = parseFloat(predictedRight);
+      
+      // Vérification basée sur la première cote (prioritaire)
+      if (current >= left && current <= right) {
+        return {
+          validated: true,
+          hitTarget: current >= left ? 'first' : 'second',
+          message: current === left ? 'VALIDÉ! (Première cote exacte)' : 
+                   current === right ? 'VALIDÉ! (Deuxième cote exacte)' : 
+                   'VALIDÉ! (Dans la plage)'
+        };
+      }
+      
+      return {
+        validated: false,
+        hitTarget: null,
+        message: 'ÉCHEC! (Hors plage)'
+      };
+    }
+
+    // Fonction pour surveiller les résultats de l'API
+    function startPredictionVerification() {
+      if (!predictionData || !nextSignalTime) return;
+      
+      const checkTime = () => {
+        const now = new Date();
+        
+        // Vérifier si nous sommes dans la fenêtre de la première minute (prioritaire)
+        const firstMinuteStart = new Date(nextSignalTime.getTime());
+        const firstMinuteEnd = new Date(nextSignalTime.getTime() + 60000);
+        
+        // Vérifier si nous sommes dans la fenêtre de la deuxième minute
+        const secondMinuteStart = new Date(secondSignalTime.getTime());
+        const secondMinuteEnd = new Date(secondSignalTime.getTime() + 60000);
+        
+        if ((now >= firstMinuteStart && now <= firstMinuteEnd) || 
+            (now >= secondMinuteStart && now <= secondMinuteEnd)) {
+          
+          // Récupérer les données actuelles de l'API
+          fetchGameData().then(gameData => {
+            if (gameData && gameData.history && gameData.history.length > 0) {
+              const latestGame = gameData.history[0];
+              const currentCoeff = parseFloat(latestGame.coefficient || latestGame.multiplier || 0);
+              
+              if (currentCoeff > 0) {
+                const result = checkPredictionResult(
+                  currentCoeff, 
+                  predictionData.leftCoeff, 
+                  predictionData.rightCoeff
+                );
+                
+                console.log(`Vérification: Coefficient actuel: ${currentCoeff}x | Prédiction: ${predictionData.leftCoeff}x - ${predictionData.rightCoeff}x`);
+                
+                // Déterminer quelle minute a été touchée
+                let timeInfo = '';
+                if (now >= firstMinuteStart && now <= firstMinuteEnd) {
+                  timeInfo = ' (1ère minute - Prioritaire)';
+                } else if (now >= secondMinuteStart && now <= secondMinuteEnd) {
+                  timeInfo = ' (2ème minute)';
+                }
+                
+                // Afficher le résultat dans la box
+                displayVerificationResult(result, currentCoeff, timeInfo);
+                
+                // Arrêter la vérification
+                clearInterval(verificationInterval);
+              }
+            }
+          });
+        }
+        
+        // Arrêter la vérification après la deuxième minute
+        if (now > secondMinuteEnd) {
+          clearInterval(verificationInterval);
+          console.log('Fenêtre de vérification expirée');
+        }
+      };
+      
+      // Vérifier toutes les 5 secondes
+      verificationInterval = setInterval(checkTime, 5000);
+      
+      // Arrêter après 5 minutes maximum
+      setTimeout(() => {
+        if (verificationInterval) {
+          clearInterval(verificationInterval);
+        }
+      }, 5 * 60 * 1000);
+    }
+
+    // Fonction pour afficher le résultat de vérification
+    function displayVerificationResult(result, currentCoeff, timeInfo) {
+      const box = document.getElementById('coefficientBox');
+      const originalContent = box.textContent;
+      
+      // Afficher le résultat
+      if (result.validated) {
+        box.style.backgroundColor = '#4CAF50';
+        box.style.color = 'white';
+        box.textContent = `✅ ${result.message}${timeInfo}\nCoefficient: ${currentCoeff}x`;
+      } else {
+        box.style.backgroundColor = '#f44336';
+        box.style.color = 'white';
+        box.textContent = `❌ ${result.message}${timeInfo}\nCoefficient: ${currentCoeff}x`;
+      }
+      
+      // Remettre le contenu original après 10 secondes
+      clearTimeout(verificationTimeout);
+      verificationTimeout = setTimeout(() => {
+        box.style.backgroundColor = '';
+        box.style.color = '';
+        box.textContent = originalContent;
+      }, 10000);
+    }
+    function analyzeCoefficientHistory(lastCoefficients) {
+      // Utiliser la nouvelle logique de génération optimisée
+      const coefficients = generateOptimizedCoefficients();
+      
+      // Calculer la moyenne des 5 derniers pour la console
+      const last5 = lastCoefficients.slice(-5);
+      const average = last5.reduce((sum, coeff) => sum + coeff, 0) / last5.length;
+      
+      // Chance entre 94% et 98%
+      const chance = Math.floor(Math.random() * 5) + 94; // 94-98%
+
+      return { 
+        leftCoeff: coefficients.leftCoeff, 
+        rightCoeff: coefficients.rightCoeff, 
+        chance, 
+        average: average.toFixed(2) 
+      };
+    }
+
+    // Fonction pour générer un délai aléatoire entre 1 et 3 minutes
+    function generateRandomDelay() {
+      // Génère un nombre aléatoire entre 1 et 3 (inclus)
+      return Math.floor(Math.random() * 3) + 1;
+    }
+
+    // Fonction pour mettre à jour l'heure
+    function updateTime() {
+      const now = new Date();
+      
+      if (signalActive && nextSignalTime && secondSignalTime) {
+        // Afficher l'heure de prédiction sans les secondes (HH:MM format)
+        const firstTime = nextSignalTime.toLocaleTimeString('fr-FR', { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          hour12: false 
+        });
+        const secondTime = secondSignalTime.toLocaleTimeString('fr-FR', { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          hour12: false 
+        });
+      //  document.getElementById('timeDisplay').textContent = `${firstTime} - ${secondTime}`;
+      } else {
+        // Afficher 00:00 quand aucun signal n'est actif
+        //document.getElementById('timeDisplay').textContent = '00:00 - 00:00';
+      }
+    }
+
+    // Fonction pour le compte à rebours
+    function startCountdown() {
+      const countdownEnd = new Date(Date.now() + 2 * 60 * 1000); // 3 minutes
+      
+      countdownInterval = setInterval(() => {
+        const now = new Date();
+        const timeLeft = countdownEnd - now;
+        
+        if (timeLeft <= 0) {
+          // Le signal est terminé, permettre un nouveau signal
+          clearInterval(countdownInterval);
+          document.getElementById('newSignalBtn').disabled = false;
+          document.getElementById('newSignalBtn').textContent = 'NOUVEAU SIGNAL';
+          document.getElementById('statusDisplay').textContent = 'Signal prêt!';
+          document.getElementById('statusDisplay').className = 'status-ready';
+          signalActive = false;
+          nextSignalTime = null;
+          secondSignalTime = null;
+          predictionData = null;
+          
+          // Nettoyer les intervalles de vérification
+          if (verificationInterval) {
+            clearInterval(verificationInterval);
+            verificationInterval = null;
+          }
+          if (verificationTimeout) {
+            clearTimeout(verificationTimeout);
+            verificationTimeout = null;
+          }
+          
+          // Remettre à zéro
+          document.getElementById('coefficientBox').textContent = '00.00X - 00.00X';
+          document.getElementById('chanceDisplay').textContent = '00%';
+          document.getElementById('progressFill').style.width = '0%';
+          
+          // Remettre l'heure à 00:00
+          updateTime();
+        } else {
+          // Afficher le temps restant
+          const minutesLeft = Math.floor(timeLeft / 60000);
+          const secondsLeft = Math.floor((timeLeft % 60000) / 1000);
+          document.getElementById('newSignalBtn').textContent = `NEXT SIGNAL: ${minutesLeft}:${secondsLeft.toString().padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+
+    // Fonction pour générer un nouveau signal avec analyse API
+    async function generateNewSignal() {
+  if (signalActive) return;
+
+  document.getElementById('statusDisplay').textContent = 'Analysis in progress ...';
+  document.getElementById('statusDisplay').className = 'status-analyzing pulsing';
+  document.getElementById('newSignalBtn').disabled = true;
+  document.getElementById('newSignalBtn').textContent = 'ANALYSE...';
+
+  let prediction;
+
+  // 🔥 NEW API PREDICTION LOGIC
+  try {
+    function getUserTimeZone() {
+  let tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Normalize legacy / deprecated zones
+  const normalizeMap = {
+    "Asia/Calcutta": "Asia/Kolkata",
+    "US/Eastern": "America/New_York",
+    "US/Central": "America/Chicago",
+    "US/Mountain": "America/Denver",
+    "US/Pacific": "America/Los_Angeles",
+    "Europe/Kiev": "Europe/Kyiv"
+  };
+
+  return normalizeMap[tz] || tz;
+}
+
+const timezone = getUserTimeZone();
+
+// OPTIONAL: send UTC offset too (extra safety)
+const offsetMinutes = -new Date().getTimezoneOffset();
+const offset =
+  (offsetMinutes >= 0 ? "+" : "-") +
+  String(Math.floor(Math.abs(offsetMinutes) / 60)).padStart(2, "0") +
+  ":" +
+  String(Math.abs(offsetMinutes) % 60).padStart(2, "0");
+
+const response = await fetch(
+  `../rocket.php?t=${encodeURIComponent(timezone)}&offset=${offset}`
+);
+
+
+console.log("Timezone:", timezone);
+
+
+
+      const apiData = await response.json();
+// Show time window from API
+document.getElementById("apiTimeWindow").textContent = apiData.time_window || "--:--";
+
+      console.log("API DATA:", apiData);
+
+      prediction = {
+  leftCoeff: parseFloat(apiData.manual_prediction.coeff).toFixed(2),
+  rightCoeff: parseFloat(apiData.ai_prediction).toFixed(2),
+  chance: Math.max(90, apiData.manual_prediction.confidence)
+};
+
+  } catch (err) {
+      console.error("API failed → fallback", err);
+
+      const coefficients = generateOptimizedCoefficients();
+      prediction = {
+          leftCoeff: coefficients.leftCoeff,
+          rightCoeff: coefficients.rightCoeff,
+          chance: Math.floor(Math.random() * 5) + 94
+      };
+  }
+
+  // Existing delay, signal activation, UI updates → unchanged
+  setTimeout(() => {
+      signalActive = true;
+
+      const randomMinutes = generateRandomDelay();
+      const now = new Date();
+      nextSignalTime = new Date(now.getTime() + randomMinutes * 60 * 1000);
+      secondSignalTime = new Date(nextSignalTime.getTime() + 60 * 1000);
+
+      predictionData = {
+          leftCoeff: prediction.leftCoeff,
+          rightCoeff: prediction.rightCoeff,
+          chance: prediction.chance,
+          generatedAt: new Date()
+      };
+
+      document.getElementById('coefficientBox').textContent = `${prediction.leftCoeff}X - ${prediction.rightCoeff}X`;
+      document.getElementById('chanceDisplay').textContent = `${prediction.chance}%`;
+      document.getElementById('progressFill').style.width = `${prediction.chance}%`;
+
+      document.getElementById('statusDisplay').textContent = 'Signal active!';
+      document.getElementById('statusDisplay').className = 'status-active pulsing';
+
+      updateTime();
+      startPredictionVerification();
+      startCountdown();
+
+  }, 10000);
+}
+
+    // Fonction pour aller au jeu
+    function goToGame() {
+      window.open('https://1wlvkt.life/?p=9wd5', '_blank');
+    }
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', function() {
+      updateTime();
+      // Mettre à jour l'heure toutes les secondes seulement si un signal est actif
+      setInterval(() => {
+        if (signalActive) {
+          updateTime();
+        }
+      }, 1000);
+    });
+  </script>
+
+
+
+
+</body></html>
