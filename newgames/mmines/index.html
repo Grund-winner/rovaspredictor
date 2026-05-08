@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mummy’s Mines UI</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: url("mbg.png") center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+  }
+
+  .game-container {
+    width: 380px;
+    background: url("mbg.png");
+    background-size: 100% 100%;
+    border: 3px solid #c09b5a;
+    border-radius: 15px;
+    box-shadow: 0 0 25px #000 inset, 0 0 12px #c09b5a;
+    padding: 15px;
+    text-align: center;
+  }
+
+  .header {
+    font-weight: bold;
+    color: #ffe6a3;
+    font-size: 22px;
+    margin-bottom: 5px;
+    text-shadow: 2px 2px 4px #000;
+  }
+
+  .jackpot {
+    background: linear-gradient(to right, #ffd500, #ff9800, #ffd500);
+    color: #241400;
+    font-weight: 800;
+    border-radius: 8px;
+    padding: 6px 0;
+    margin: 6px 0;
+    font-size: 18px;
+    box-shadow: inset 0 0 5px #000;
+  }
+
+  .controls-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin: 10px 0;
+  }
+
+  .field-sizes button,
+  .mine-controls button {
+    background: #422;
+    border: 2px solid #c09b5a;
+    color: #fff;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .field-sizes button.active,
+  .mine-controls button.active {
+    background: #c09b5a;
+    color: #000;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin: 15px 0;
+    justify-items: center;
+    align-items: center;
+  }
+
+  .tile {
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(145deg, #5a3b7f, #3b2a5b);
+    border: 2px solid #2c1b45;
+    border-radius: 8px;
+    box-shadow: inset 0 0 6px #000;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+
+  .tile:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+  }
+
+  .tile.revealed.win {
+    background: radial-gradient(circle at center, #f8d948, #d49e00);
+    box-shadow: 0 0 10px #ffe066, inset 0 0 6px #c08c00;
+    animation: reveal 0.4s ease;
+  }
+
+  .tile.revealed.win img {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+  }
+
+  .tile.revealed.mine {
+    background: radial-gradient(circle at center, #6b0000, #2a0000);
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e4/Skull_icon.svg');
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes reveal {
+    0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+    80% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(2px, -2px); }
+    50% { transform: translate(-2px, 2px); }
+    75% { transform: translate(2px, 2px); }
+  }
+
+  .bottom-controls {
+    margin-top: 10px;
+  }
+
+  .collect-btn {
+    background: #36d6a0;
+    color: #000;
+    border: none;
+    padding: 12px 0;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 8px;
+    transition: transform 0.2s ease;
+  }
+
+  .collect-btn:hover {
+    transform: scale(1.05);
+  }
+
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="header">MUMMY’S MINES</div>
+    <br><br><br><br>
+    <div class="controls-top">
+      <div class="mine-controls">
+        <span>MINES: </span>
+        <button id="minusMine">−</button>
+        <span id="mineCount">3</span>
+        <button id="plusMine">+</button>
+      </div>
+      <div class="field-sizes">
+        <button class="size-btn" data-size="3">3×3</button>
+        <button class="size-btn" data-size="4">4×4</button>
+        <button class="size-btn active" data-size="5">5×5</button>
+      </div>
+    </div>
+
+    <div id="board" class="board"></div>
+
+    <div class="bottom-controls">
+      <button id="collectBtn" class="collect-btn">COLLECT</button>
+      <button onclick="history.back()" class="collect-btn">Back</button>
+      <div class="stats"></div>
+    </div>
+  </div>
+
+<script>
+  const board = document.getElementById("board");
+  const mineCountEl = document.getElementById("mineCount");
+  const collectBtn = document.getElementById("collectBtn");
+  const sizeButtons = document.querySelectorAll(".size-btn");
+
+  let gridSize = 5;
+  let mineCount = 3;
+  let revealed = false;
+
+  // ✅ Mine map for gridSize = 5
+  const mineMap = {
+    1: 13,
+    2: 8,
+    3: 6,
+    4: 4,
+    5: 3,
+    6: 3,
+    7: 2,
+    8: 2,
+    9: 1,
+    10: 1
+  };
+
+  function createBoard() {
+    board.innerHTML = "";
+    board.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+    for (let i = 0; i < gridSize * gridSize; i++) {
+      const tile = document.createElement("div");
+      tile.className = "tile";
+      board.appendChild(tile);
+    }
+  }
+
+  function getRandomIndexes(count, max) {
+    const arr = [];
+    while (arr.length < count) {
+      const n = Math.floor(Math.random() * max);
+      if (!arr.includes(n)) arr.push(n);
+    }
+    return arr;
+  }
+
+  function revealTiles() {
+    const tiles = [...board.children];
+
+    // ✅ If grid is 5x5, use mineMap; otherwise, use default logic
+    const winCount = gridSize === 5
+      ? (mineMap[mineCount] || 4)
+      : Math.ceil(tiles.length / 5);
+
+    const winIndexes = getRandomIndexes(winCount, tiles.length);
+
+    winIndexes.forEach((i, idx) => {
+      setTimeout(() => {
+        tiles[i].classList.add("revealed", "win");
+        tiles[i].innerHTML = `<img src="https://i.ibb.co/4RTtSZJ0/IMG-8341.jpg" alt="gem">`;
+      }, idx * 200);
+    });
+
+    revealed = true;
+    collectBtn.textContent = "RESET";
+  }
+
+  function resetGame() {
+    revealed = false;
+    collectBtn.textContent = "COLLECT";
+    createBoard();
+  }
+
+  // ✅ Mines control
+  document.getElementById("plusMine").onclick = () => {
+    if (mineCount < 10) mineCount++;
+    mineCountEl.textContent = mineCount;
+  };
+
+  document.getElementById("minusMine").onclick = () => {
+    if (mineCount > 1) mineCount--;
+    mineCountEl.textContent = mineCount;
+  };
+
+  // ✅ Grid size control
+ /* sizeButtons.forEach(btn => {
+    btn.onclick = () => {
+      sizeButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      gridSize = parseInt(btn.dataset.size);
+      createBoard();
+    };
+  });*/
+
+  // ✅ Collect button
+  collectBtn.onclick = () => {
+    if (!revealed) revealTiles();
+    else resetGame();
+  };
+
+  createBoard();
+</script>
+</body>
+</html>

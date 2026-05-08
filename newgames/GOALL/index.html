@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Grid</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1 class="title">GO GOAL</h1>
+ <div class="controls text-center mt-3">
+  <div class="select-wrapper">
+    <select 
+      id="gridSizeSelect" 
+      class="form-select size-select" 
+      onchange="updateGridSize()"
+    >
+      <option value="3x4" >Small</option>
+      <option value="4x7" selected>Medium</option>
+      <option value="5x10">Large</option>
+    </select>
+  </div>
+</div>
+
+    <div class="grid-container">
+        <!-- Grid cells will be added dynamically -->
+    </div>
+    <button class="restart-button" onclick="resetGame()">
+  <img src="miminesrestart.png" alt="Restart">
+</button>
+
+    <button class="button" onclick="moveBall()">Get Signal</button>
+    <a onclick="history.back()" class="button back-button">Back</a>
+
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2>Game Over!</h2>
+            <p>The ball has reached the end of the path.</p>
+            <button class="modal-button" onclick="resetGame()">Start Again</button>
+        </div>
+    </div>
+
+   
+
+    <script src="script.js"></script>
+</body>
+</html> 

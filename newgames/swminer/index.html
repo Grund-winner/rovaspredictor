@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sweet Egg Game</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: url("https://curacao-sweet.gamingcorpscasino.com/static/media/bg.min.618da54a.jpg") no-repeat center center / cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .game {
+    text-align: center;
+    background: url("https://curacao-sweet.gamingcorpscasino.com/static/media/board.min.64bd1cd0.png") no-repeat center center / contain;
+    padding: 20px;
+    width: 340px;
+    position: relative;
+  }
+
+  .balance {
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    position: absolute;
+    top: -30px;
+    left: 0;
+    right: 0;
+    text-shadow: 1px 1px 2px #000;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 40px;
+  }
+
+  .egg {
+    width: 100%;
+    aspect-ratio: 1;
+    background: url("https://curacao-sweet.gamingcorpscasino.com/static/media/t.min.9ebadef9.png") center/contain no-repeat;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.3s ease;
+  }
+
+  .egg.revealed.safe {
+    background-image: url("https://curacao-sweet.gamingcorpscasino.com/static/media/prize.min.ae3c1949.png");
+    animation: pop 0.4s ease;
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+    70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); }
+  }
+
+  .controls {
+    background: url("https://curacao-sweet.gamingcorpscasino.com/static/media/UI_Main.min.7cbd9c64.png") center/contain no-repeat;
+    background-size: 100% 100%;
+    margin-top: 20px;
+    padding: 20px 10px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    background-color: #a065f0;
+    color: white;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 10px;
+    transition: transform 0.2s ease;
+  }
+
+  .btn:hover {
+    transform: scale(1.05);
+  }
+
+  .mine-control {
+    display: flex;
+    background:black;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .mine-control button {
+    background: #ffffff40;
+    color: white;
+    font-size: 18px;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .mine-control button:hover {
+    background: #ffffff80;
+  }
+</style>
+</head>
+<body>
+  <div class="game">
+    <div class="balance">Sweet Miner</div>
+
+    <div class="board" id="board"></div>
+
+    <div class="controls">
+      <button id="cashoutBtn" class="btn">CASH OUT</button>
+      <button onclick="history.back()" class="btn">Back</button>
+      <div class="mine-control">
+        <button id="minus">−</button>
+        <span>MINES: <span id="mineCount">1</span></span>
+        <button id="plus">+</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const board = document.getElementById("board");
+  const cashoutBtn = document.getElementById("cashoutBtn");
+  const mineCountEl = document.getElementById("mineCount");
+
+  const mineMap = {
+    1: 13,
+    2: 8,
+    3: 6,
+    5: 4,
+    6: 2,
+    7: 3,
+    10: 2
+  };
+
+  const allowedCounts = [1, 2, 3, 5, 6, 7, 10];
+  let mineCount = 1;
+  let revealed = false;
+
+  function getZigzagIndexes(count) {
+    const allIndexes = [...Array(25).keys()].filter(i => ![0, 4, 20, 24].includes(i));
+    let zigzag = [];
+    for (let r = 0; r < 5; r++) {
+      let row = allIndexes.filter(i => Math.floor(i / 5) === r);
+      if (r % 2 !== 0) row.reverse();
+      zigzag = zigzag.concat(row);
+    }
+    const selected = [];
+    while (selected.length < count && zigzag.length > 0) {
+      const idx = Math.floor(Math.random() * zigzag.length);
+      selected.push(zigzag[idx]);
+      zigzag.splice(idx, 1);
+    }
+    return selected;
+  }
+
+  function createBoard() {
+    board.innerHTML = "";
+    for (let i = 0; i < 25; i++) {
+      const egg = document.createElement("div");
+      egg.className = "egg";
+      board.appendChild(egg);
+    }
+  }
+
+  async function revealEggs() {
+    const eggs = [...board.children];
+    const prizeCount = mineMap[mineCount] || 5;
+    const safeIndexes = getZigzagIndexes(prizeCount);
+
+    for (let i = 0; i < safeIndexes.length; i++) {
+      const idx = safeIndexes[i];
+      setTimeout(() => {
+        eggs[idx].classList.add("revealed", "safe");
+      }, i * 200);
+    }
+
+    revealed = true;
+    cashoutBtn.textContent = "RESET";
+  }
+
+  function resetBoard() {
+    createBoard();
+    revealed = false;
+    cashoutBtn.textContent = "CASH OUT";
+  }
+
+  // ✅ Mines count control (only specific numbers)
+  document.getElementById("plus").onclick = () => {
+    const currentIndex = allowedCounts.indexOf(mineCount);
+    if (currentIndex < allowedCounts.length - 1) {
+      mineCount = allowedCounts[currentIndex + 1];
+      mineCountEl.textContent = mineCount;
+    }
+  };
+
+  document.getElementById("minus").onclick = () => {
+    const currentIndex = allowedCounts.indexOf(mineCount);
+    if (currentIndex > 0) {
+      mineCount = allowedCounts[currentIndex - 1];
+      mineCountEl.textContent = mineCount;
+    }
+  };
+
+  // ✅ Cashout / Reset button
+  cashoutBtn.onclick = () => {
+    if (!revealed) revealEggs();
+    else resetBoard();
+  };
+
+  // Initialize
+  createBoard();
+</script>
+</body>
+</html>

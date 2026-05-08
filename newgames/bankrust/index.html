@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Bank or Bust — Alarm UI</title>
+
+    <!-- Bootstrap (minified) -->
+    <link 
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+      rel="stylesheet" 
+      integrity="sha384-ENjdO4Dr2bkBIFxQpeoYz1HI+K9CR2x0nqD5Z2mMZV9zzTtmI3UksdQRVvoxMfoo" 
+      crossorigin="anonymous"
+    >
+
+    <!-- Tailwind (Play CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      :root {
+        --glass-bg: rgba(255,255,255,0.06);
+        --glass-border: rgba(255,255,255,0.12);
+        --accent: rgba(255,60,60,0.95);
+      }
+
+      .dark:root, .dark {
+        --glass-bg: rgba(0,0,0,0.45);
+        --glass-border: rgba(255,255,255,0.06);
+        --accent: rgba(255,90,90,0.98);
+      }
+
+      body {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+        background-image: url('https://curacao-mines-bankorbust.gamingcorpscasino.com/static/media/img_background_mobile.min.d67990fb.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      .panel {
+        width: min(980px, 96vw);
+        margin: 40px auto;
+        padding: 28px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.65));
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255,255,255,0.03);
+      }
+
+      .game-logo {
+        height: 68px;
+        display: block;
+        margin: 0 auto 20px;
+      }
+
+      .cells {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+      }
+
+      .cell {
+        width: 100%;
+        padding-top: 100%;
+        position: relative;
+        perspective: 900px;
+      }
+
+      .cell-inner {
+        position: absolute;
+        inset: 0;
+        border-radius: 8px;
+        overflow: visible;
+        transform-style: preserve-3d;
+        transition: transform .6s cubic-bezier(.2,.9,.3,1);
+      }
+
+      .cell.revealed .cell-inner {
+        transform: rotateX(180deg);
+      }
+
+      .cell-face {
+        position: absolute;
+        inset: 0;
+        border-radius: 8px;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .front {
+        background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+        border: 1px solid var(--glass-border);
+      }
+
+      .back {
+        transform: rotateX(180deg);
+        background: rgba(0,0,0,0.8);
+      }
+
+      .cell-front-img {
+        width: 100%;
+        height: 100%;
+        background: url('https://i.ibb.co/nNd6QZvP/EC84-DB4-C-E376-4388-91-B3-67-A1-CFA11101.jpg') center/contain no-repeat;
+      }
+
+      .coin-img {
+        width: 100%;
+        height: 100%;
+        background: url('https://i.ibb.co/chHqWgYH/3-C61-FCE1-D3-E7-44-DC-BA28-8538-FDE23614.jpg') center/contain no-repeat;
+      }
+
+      /* Alarm control */
+      .alarm-control {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .alarm-btn {
+        background: var(--accent);
+        border: none;
+        border-radius: 50%;
+        width: 42px;
+        height: 42px;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all .25s;
+      }
+
+      .alarm-btn:hover {
+        filter: brightness(1.2);
+      }
+
+      .alarm-display {
+        min-width: 80px;
+        text-align: center;
+        background: rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 8px 16px;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .get-signal {
+        margin-top: 18px;
+        background: var(--accent);
+        border: none;
+        padding: 10px 26px;
+        border-radius: 999px;
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .3s;
+      }
+
+      .get-signal:hover {
+        filter: brightness(1.2);
+      }
+    </style>
+  </head>
+
+  <body class="min-h-full flex items-start justify-center p-4">
+    <div class="panel text-center">
+      <img src="https://curacao-mines-bankorbust.gamingcorpscasino.com/static/media/game_logo.min.459a19df.png" 
+           class="game-logo" 
+           alt="Bank or Bust">
+
+      <div class="cells" id="cells"></div>
+
+      <div class="alarm-control">
+        <button id="minusAlarm" class="alarm-btn">−</button>
+        <div id="alarmDisplay" class="alarm-display">Alarm 1</div>
+        <button id="plusAlarm" class="alarm-btn">+</button>
+      </div>
+
+      <button id="getSignal" class="get-signal">Get Signal</button>
+      <button onclick="restartGame()" id="restartBtn" class="get-signal">Restart</button>
+      <button onclick="history.back()" id="back" class="get-signal">Back</button>
+
+      <script>
+        function restartGame() {
+          // Remove all revealed states and coin images
+          allCells.forEach(cell => {
+            cell.classList.remove('revealed');
+            cell.querySelector('.back').innerHTML = '';
+          });
+
+          // Reset alarm to first level
+          currentIndex = 0;
+          updateAlarmDisplay();
+        }
+
+        const alarmMapping = { 1: 10, 2: 7, 3: 5, 5: 3, 7: 2 };
+        const alarmLevels = [1, 2, 3, 5, 7];
+        let currentIndex = 0;
+
+        const cellsRoot = document.getElementById('cells');
+        for (let i = 0; i < 25; i++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+
+          const inner = document.createElement('div');
+          inner.className = 'cell-inner';
+
+          const front = document.createElement('div');
+          front.className = 'cell-face front';
+
+          const imgWrap = document.createElement('div');
+          imgWrap.className = 'cell-front-img';
+          front.appendChild(imgWrap);
+
+          const back = document.createElement('div');
+          back.className = 'cell-face back';
+
+          inner.appendChild(front);
+          inner.appendChild(back);
+          cell.appendChild(inner);
+          cellsRoot.appendChild(cell);
+        }
+
+        const allCells = [...document.querySelectorAll('.cell')];
+
+        const alarmDisplay = document.getElementById('alarmDisplay');
+        const minusAlarm = document.getElementById('minusAlarm');
+        const plusAlarm = document.getElementById('plusAlarm');
+        const getSignal = document.getElementById('getSignal');
+
+        function updateAlarmDisplay() {
+          const alarmNum = alarmLevels[currentIndex];
+          alarmDisplay.textContent = `Alarm ${alarmNum}`;
+        }
+        updateAlarmDisplay();
+
+        minusAlarm.addEventListener('click', () => {
+          if (currentIndex > 0) {
+            currentIndex--;
+            updateAlarmDisplay();
+          }
+        });
+
+        plusAlarm.addEventListener('click', () => {
+          if (currentIndex < alarmLevels.length - 1) {
+            currentIndex++;
+            updateAlarmDisplay();
+          }
+        });
+
+        getSignal.addEventListener('click', () => {
+          allCells.forEach(cell => {
+            cell.classList.remove('revealed');
+            cell.querySelector('.back').innerHTML = '';
+          });
+
+          const alarmNum = alarmLevels[currentIndex];
+          const cellCount = alarmMapping[alarmNum];
+          const shuffled = [...allCells].sort(() => 0.5 - Math.random());
+          const selected = shuffled.slice(0, cellCount);
+
+          selected.forEach(cell => {
+            cell.classList.add('revealed');
+            cell.querySelector('.back').innerHTML = '<div class="coin-img"></div>';
+          });
+        });
+      </script>
+    </div>
+  </body>
+</html>
